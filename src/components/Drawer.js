@@ -1,6 +1,6 @@
 function Drawer() {
     return (
-        <div className="overlay">
+        <div style={{display: 'none'}} className="overlay">
             <div className="drawer d-flex flex-column">
                 <div className="header-cart-part">
                 <h2 className="mb-30">Shopping cart</h2>
