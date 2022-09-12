@@ -32,21 +32,19 @@ header {
 }
 
 
-
-.button {
-  background: #ffffff;
-  border: 1px solid #f2f2f2;
-  box-sizing: border-box;
-  border-radius: 8px;
-  height: 32px;
-  width: 32px;
-  cursor: pointer;
-}
-
 .search-block {
   border: 1px solid #f2f2f2;
   border-radius: 10px;
   padding: 0 13px;
+
+  position: relative;
+
+  .clear {
+    position: absolute;
+    right: 0;
+    width: 30px;
+    height: 30px;
+  }
 
   img {
     padding-top: 10px;
@@ -60,29 +58,42 @@ header {
 }
 
 .overlay {
-  position: absolute;
+  position: fixed;
   left: 0;
-  top: 0;
+  top: 0;   
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 1;
+
 }
 
 .drawer {
   display: flex;
   flex-direction: column;
-  position: absolute;
+  position: fixed;
   width: 420px;
   height: 100%;
-  right: 0px;
+  right: 0;
+  bottom: 0;
 
   padding: 30px;
-
   background: #FFFFFF;
   box-shadow: -10px 4px 24px rgba(0, 0, 0, 0.1);
 
   .header-cart-part {
+    .rmv-btn {
+      opacity: 0.5;
+      transition: opacity 0.2s ease-in-out;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+    
+  }
+
+  .body-cart-part {
     flex: 1;
     overflow: auto;
   }
