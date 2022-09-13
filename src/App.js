@@ -1,25 +1,47 @@
 import React, { useState, useEffect } from 'react';
+import { Route } from 'react-router-dom';
+
+import axios from 'axios';
 import Header from './components/Header';
 import Drawer from './components/Drawer';
-import Card from './components/Cards';
+import Home from './pages/Home';
 
 
 function App() {
   const [cardOpened, setCardOpened] = useState(false);
   const [sneakers, setSneakers] = useState([]);
   const [cardItems, setCardItems] = useState([]);
+  const [favorites, setFavorites] = useState([]);
   const [searchValue, setSearchValue] = useState('');
 
   useEffect(() => {
-    fetch('https://631ec1cc22cefb1edc39b06f.mockapi.io/sneakers').then((res) => {
-      return res.json();
-    }).then((json => {
-      setSneakers(json);
-    }));
+    axios.get('https://631ec1cc22cefb1edc39b06f.mockapi.io/sneakers').then((res) => {
+      setSneakers(res.data);
+    });
+    axios.get('https://631ec1cc22cefb1edc39b06f.mockapi.io/cart').then((res) => {
+      setCardItems(res.data);
+    })
+    
   }, []);
 
   const onAddToCard = (obj) => {
+    axios.post('https://631ec1cc22cefb1edc39b06f.mockapi.io/cart', obj);
     setCardItems([ ...cardItems, obj]);
+  };
+
+  const onRemoveFromDrawer = (id) => {
+    axios.delete(`https://631ec1cc22cefb1edc39b06f.mockapi.io/cart/${id}`);
+    setCardItems((prev) => prev.filter(item => item.id !== id));
+  };
+
+  const onAddToFavorites = (obj) => {
+    axios.post('https://631ec1cc22cefb1edc39b06f.mockapi.io/favorites', obj);
+    setFavorites((prev) => [ ...prev, obj]);
+  };
+
+  const onRemoveFromFavorites = (id) => {
+    axios.delete(`https://631ec1cc22cefb1edc39b06f.mockapi.io/favorites/${id}`);
+    setCardItems((prev) => prev.filter(item => item.id !== id));
   };
 
   const onChangeSearchInput = (event) => {
@@ -29,34 +51,18 @@ function App() {
 
   return (
   <div className="wrapper clear">
-    { cardOpened && <Drawer items={cardItems} onClose={() => setCardOpened(false)} /> }
+    { cardOpened && <Drawer items={cardItems} onClose={() => setCardOpened(false)} onRemove={onRemoveFromDrawer} /> }
     <Header onClickCard= {() => setCardOpened(true)} />
-    <div className="content p-40">  
-      <div className="mb-40 justify-between d-flex">
-        <h1>{searchValue ? `Search by "${searchValue}"` : "All shoes"}</h1>
-        <div className="search-block align-baseline">
-          <img src="/img/search.svg" alt="search" />
-          {searchValue && <img className="clear cu-p" onClick={() => setSearchValue('')} src="/img/bt-remove.svg" alt="remove button" />}
-          <input onChange={onChangeSearchInput} value={searchValue} placeholder="Search..."/>
-        </div>
-      </div>
-      
-      <div className="d-flex justify-between flex-wrap">
-        {
-          sneakers.filter((item) => item.title.toLowerCase().includes(searchValue.toLowerCase()))
-          .map((CardProps) => (
-            <Card 
-              
-              title={CardProps.title}
-              price={CardProps.price}
-              imgUrl={CardProps.imgUrl}
-              onFavorite={() => console.log('Add to favorites')}
-              onPlus={(product) => onAddToCard(product)}
-            />
-          ))
-        }
-      </div> 
-    </div>
+    <Route path='/' exact>
+      <Home 
+      items={sneakers}
+      searchValue={searchValue}
+      setSearchValue={setSearchValue}
+      onChangeSearchInput={onChangeSearchInput}
+      onAddToCard={onAddToCard}
+      onAddToFavorites={onAddToFavorites}
+      />
+    </Route>
   </div>
 );}
 

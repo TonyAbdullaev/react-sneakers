@@ -1,4 +1,4 @@
-function Drawer({ onClose, items = [] }) {
+function Drawer({ onClose, onRemove, items = [] }) {
     return (
         <div className="overlay">
             <div className="drawer d-flex flex-column">
@@ -11,37 +11,54 @@ function Drawer({ onClose, items = [] }) {
                         </svg>
                     </div>
                 </div>
-                <div className="body-cart-part">
-                    {
-                        items.map((obj) =>
-                            <div className="cartItem d-flex align-center mb-20">
-                                <div style={{backgroundImage: `url(${obj.imgUrl}`}} className="cartItemImg"></div>
-                                <div className="mr-20">
-                                    <p className="mb-5">{obj.title}</p>
-                                    <b>{obj.price}$</b>
-                                </div>
-                                <img className="removeBtn" src="/img/bt-remove.svg" alt="remove button" />
+                {
+                    items.length > 0 ? (
+                        <>
+                            <div className="body-cart-part">
+                                {
+                                    items.map((obj) =>
+                                        <div className="cartItem d-flex align-center mb-20">
+                                            <div style={{backgroundImage: `url(${obj.imgUrl}`}} className="cartItemImg"></div>
+                                            <div className="mr-20">
+                                                <p className="mb-5">{obj.title}</p>
+                                                <b>{obj.price}$</b>
+                                            </div>
+                                            <img className="removeBtn" src="/img/bt-remove.svg" alt="remove button" onClick={() => onRemove(obj.id)} />
+                                        </div>
+                                    )
+                                }
                             </div>
-                        )
-                    }
-                </div>
-                <div className="cartTotalBlock fotter-cart-part">
-                    <ul>
-                        <li>
-                            <span>Total:</span>
-                            <div></div>
-                            <b>100$</b>
-                        </li>
-                        <li>
-                            <span>Taks 5%</span>
-                            <div></div>
-                            <b>5$</b>
-                        </li>
-                    </ul>
-                    <button className="greenButton">Buy
-                        <img src="/img/arrow.svg" alt="Arrow" />
-                    </button>
-                </div>
+                            <div className="cartTotalBlock fotter-cart-part">
+                                <ul>
+                                    <li>
+                                        <span>Total:</span>
+                                        <div></div>
+                                        <b>100$</b>
+                                    </li>
+                                    <li>
+                                        <span>Taks 5%</span>
+                                        <div></div>
+                                        <b>5$</b>
+                                    </li>
+                                </ul>
+                                <button className="greenButton">Buy
+                                    <img src="/img/arrow.svg" alt="Arrow" />
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        
+                            <div className="cardEmpty d-flex align-center justify-center flex-column flex">
+                                <img className="mb-20" width={120} height={120} src="/img/EmptyDrawer.jpg" alt="Empty drawer" />
+                                <h2>Empty drawer</h2>
+                                <p className="opacity-6">Add at least one pair of sneakers to make order</p>
+                                <button onClick={onClose} className="greenButton">
+                                    <img src="/img/arrow.svg" alt="Arrow" />
+                                    Go back...
+                                </button>
+                            </div>
+                    )
+                }
             </div>
         </div>
     )
