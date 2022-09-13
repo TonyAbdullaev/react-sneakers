@@ -1,4 +1,4 @@
-import Card from './components/Cards';
+{/*import Card from './components/Cards';
 
 function Favorites(){
     return (
@@ -18,4 +18,4 @@ function Favorites(){
     );
 };
 
-export default Favorites;
+export default Favorites; */}

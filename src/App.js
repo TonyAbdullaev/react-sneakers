@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 
 import axios from 'axios';
 import Header from './components/Header';
@@ -52,17 +52,32 @@ function App() {
   return (
   <div className="wrapper clear">
     { cardOpened && <Drawer items={cardItems} onClose={() => setCardOpened(false)} onRemove={onRemoveFromDrawer} /> }
-    <Header onClickCard= {() => setCardOpened(true)} />
-    <Route path='/' exact>
-      <Home 
-      items={sneakers}
-      searchValue={searchValue}
-      setSearchValue={setSearchValue}
-      onChangeSearchInput={onChangeSearchInput}
-      onAddToCard={onAddToCard}
-      onAddToFavorites={onAddToFavorites}
-      />
-    </Route>
+    
+    <Routes>
+      <Route path='/' element= {
+        <Header onClickCard= {() => setCardOpened(true)} />
+      } >
+        <Route index element= {
+          <Home 
+          sneakers={sneakers}
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+          onChangeSearchInput={onChangeSearchInput}
+          onAddToCard={onAddToCard}
+          onAddToFavorites={onAddToFavorites}
+        />
+        } ></Route>
+        <Route path='drawer' element ={
+          <Drawer items={cardItems} onClose={() => setCardOpened(false)} onRemove={onRemoveFromDrawer} />
+          }>
+        </Route>
+        <Route index path='favorites' element ={
+          <Drawer items={cardItems} onClose={() => setCardOpened(false)} onRemove={onRemoveFromDrawer} />
+          }>
+        </Route>
+        
+      </Route>
+    </Routes>
   </div>
 );}
 

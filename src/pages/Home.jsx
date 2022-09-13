@@ -7,6 +7,8 @@ function Home(
     onChangeSearchInput,
     onAddToCard,
     onAddToFavorites){
+
+    console.log(sneakers.sneakers);
     return (
         <div className="content p-40">  
             <div className="mb-40 justify-between d-flex">
