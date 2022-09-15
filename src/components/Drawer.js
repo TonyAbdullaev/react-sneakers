@@ -21,7 +21,7 @@ function Drawer({ onClose, onRemove, items = [] }) {
                             <div className="body-cart-part">
                                 {
                                     items.map((obj) =>
-                                        <div className="cartItem d-flex align-center mb-20">
+                                        <div key={obj.id} className="cartItem d-flex align-center mb-20">
                                             <div style={{backgroundImage: `url(${obj.imgUrl}`}} className="cartItemImg"></div>
                                             <div className="mr-20">
                                                 <p className="mb-5">{obj.title}</p>
@@ -58,12 +58,12 @@ function Drawer({ onClose, onRemove, items = [] }) {
                                 <img className="mb-20" width={120} height={120} src="/img/EmptyDrawer.jpg" alt="Empty drawer" />
                                 <h2>Empty drawer</h2>
                                 <p className="opacity-6">Add at least one pair of sneakers to make order</p>
-                                <Link to='/'>
+                                
                                     <button onClick={onClose} className="greenButton">
                                         <img src="/img/arrow.svg" alt="Arrow" />
                                         Go back...
                                     </button>
-                                </Link>
+                                
                             </div>
                     )
                 }

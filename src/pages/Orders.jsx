@@ -2,7 +2,8 @@ import Card from '../components/Cards';
 
 function Favorites(
         {favorites,
-        onAddToFavorites}){
+        onAddToFavorites,
+        onRemove}){
 
     return ( 
         <div className="content p-40">  

@@ -1,30 +1,30 @@
 import Card from '../components/Cards';
 
 function Home(
-    sneakers,
-    searchValue,
-    setSearchValue,
-    onChangeSearchInput,
-    onAddToCard,
-    onAddToFavorites){
+        {sneakers,
+        searchValue,
+        setSearchValue,
+        onChangeSearchInput,
+        onAddToCard,
+        onAddToFavorites}){
 
-    console.log(sneakers.sneakers);
-    return (
+    return ( 
         <div className="content p-40">  
             <div className="mb-40 justify-between d-flex">
                 <h1>{searchValue ? `Search by "${searchValue}"` : "All shoes"}</h1>
                 <div className="search-block align-baseline">
-                <img src="/img/search.svg" alt="search" />
-                {searchValue && <img className="clear cu-p" onClick={() => setSearchValue('')} src="/img/bt-remove.svg" alt="remove button" />}
-                <input onChange={onChangeSearchInput} value={searchValue} placeholder="Search..."/>
+                    <img src="/img/search.svg" alt="search" />
+                    {searchValue && <img className="clear cu-p" onClick={() => setSearchValue('')} src="/img/bt-remove.svg" alt="remove button" />}
+                    <input onChange={onChangeSearchInput} value={searchValue} placeholder="Search..."/>
                 </div>
             </div> 
             <div className="d-flex justify-between flex-wrap">
                 {
                 sneakers.filter((item) => item.title.toLowerCase().includes(searchValue.toLowerCase()))
-                .map((CardProps) => (
+                .map((CardProps, index) => (
                     <Card 
-                    
+                    key={index}
+                    id={CardProps.id}
                     title={CardProps.title}
                     price={CardProps.price}
                     imgUrl={CardProps.imgUrl}
