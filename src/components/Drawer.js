@@ -1,6 +1,27 @@
+import React from 'react'
 import { Link } from "react-router-dom";
+import Info from "./Info";
+import AppContext from '../context';
+
+import axios from 'axios';
 
 function Drawer({ onClose, onRemove, items = [] }) {
+    const { cardItems, setCardItems } = React.useContext(AppContext);
+    
+    const [isOrderComplited, setOrderComplited] = React.useState(false);
+
+
+    const getSumOfItems = () => items.length > 1 ? items.reduce((obj, acc) =>  obj.price + acc.price) : items[0].price;
+
+    const taks = 5; 
+    const getTaks = () => getSumOfItems() / 100 * taks;
+
+    const onClickOrder = () => {
+        axios.post('https://631ec1cc22cefb1edc39b06f.mockapi.io/orders', cardItems);
+        // setCardItems([ ...cardItems, data]);
+        setOrderComplited(true);
+        setCardItems([])
+    }
     return (
         <div className="overlay">
             <div className="drawer d-flex flex-column">
@@ -27,7 +48,7 @@ function Drawer({ onClose, onRemove, items = [] }) {
                                                 <p className="mb-5">{obj.title}</p>
                                                 <b>{obj.price}$</b>
                                             </div>
-                                            <img className="removeBtn" src="/img/bt-remove.svg" alt="remove button" onClick={() => onRemove(obj.id)} />
+                                            <img   className="removeBtn" src="/img/bt-remove.svg" alt="remove button" onClick={() => onRemove(obj)} />
                                         </div>
                                     )
                                 }
@@ -37,34 +58,27 @@ function Drawer({ onClose, onRemove, items = [] }) {
                                     <li>
                                         <span>Total:</span>
                                         <div></div>
-                                        <b>100$</b>
+                                        <b>{getSumOfItems()}$</b>
                                     </li>
                                     <li>
                                         <span>Taks 5%</span>
                                         <div></div>
-                                        <b>5$</b>
+                                        <b>{getTaks()}$</b>
                                     </li>
                                 </ul>
-                                    <button className="greenButton">
-                                        <Link to='/'>Buy
-                                            <img src="/img/arrow.svg" alt="Arrow" />
-                                        </Link>
+                                    <button className="greenButton" onClick={onClickOrder}>
+                                        {/* <Link to='/'>Buy */}
+                                            Buy<img src="/img/arrow.svg" alt="Arrow" />
+                                        {/* </Link> */}
                                     </button>
                             </div>
                         </>
                     ) : (
-                        
-                            <div className="cardEmpty d-flex align-center justify-center flex-column flex">
-                                <img className="mb-20" width={120} height={120} src="/img/EmptyDrawer.jpg" alt="Empty drawer" />
-                                <h2>Empty drawer</h2>
-                                <p className="opacity-6">Add at least one pair of sneakers to make order</p>
-                                
-                                    <button onClick={onClose} className="greenButton">
-                                        <img src="/img/arrow.svg" alt="Arrow" />
-                                        Go back...
-                                    </button>
-                                
-                            </div>
+                            <Info 
+                                title={ isOrderComplited ? "Order is processed" : "Empty drawer"} 
+                                image={ isOrderComplited ? "/img/shopping-done.jpg" : "/img/EmptyDrawer.jpg"} 
+                                description={ isOrderComplited ? `Your order is ${23}, you'll receive it as soon as possible` : "Add at least one pair of sneakers to make order"}
+                            />
                     )
                 }
             </div>
