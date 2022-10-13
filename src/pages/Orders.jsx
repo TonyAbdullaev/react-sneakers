@@ -1,11 +1,9 @@
 import axios from 'axios';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import AppContext from '../context';
 import Card from '../components/Cards';
 
 function Orders(){
-    const {  onAddToFavorites, onAddToCard } = useContext(AppContext);
     const [ordered, setOrdered] = useState([]);
     const [ isLoading, setIsLoading ] = useState(true);
 
@@ -29,23 +27,25 @@ function Orders(){
             <div className="mb-40 justify-between d-flex">
                 <h1>My orders</h1>
             </div> 
-            <div className="d-flex justify-between flex-wrap">
+            <div className="d-flex flex-wrap">
                 {
-                    // ordered.length > 0 ? 
+                    ordered.length > 0 ? 
                     ( isLoading ? [...Array(12)] : ordered ).map((CardProps, index) => (
-                            <Card
-                                key={index}
-                                loading={isLoading}
-                                { ...CardProps }
-                            />
+                            <div className="mr-40">
+                                <Card
+                                    key={index}
+                                    loading={isLoading}
+                                    { ...CardProps }
+                                />
+                            </div>
                         ))
-                    //  : 
-                    //     <div className='d-flex flex-column emptyOrders align-center'>
-                    //         <img width={150} height={150} src="/img/sad-smile.svg" alt="Sad" />
-                    //         <b>You don't have any orders</b>
-                    //         <p>Are you poor?</p>
-                    //         <p>Add at least one order, please!</p>
-                    //     </div>
+                     : 
+                        <div className='d-flex flex-column emptyOrders align-center'>
+                            <img width={70} height={70} src="/img/sad-smile.svg" alt="Sad" />
+                            <b>You don't have any orders</b>
+                            <p>Are you poor?</p>
+                            <p>Add at least one order, please!</p>
+                        </div>
                 }
             </div> 
         </div>

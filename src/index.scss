@@ -192,6 +192,8 @@ header {
   border-radius: 20px;
   overflow: hidden;
 
+  // flex-shrink: 1;
+
   p {
     font-size: 16px;
   }
@@ -233,4 +235,5 @@ header {
 
 .emptyOrders {
   flex: 1;
+  margin: 60px 0;
 }

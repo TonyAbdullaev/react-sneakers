@@ -35,6 +35,7 @@ function Drawer({ onClose, onRemove, items = [], opened }) {
             setCardItems([]);
             for (let i = 0; i < cardItems.length; i++) {
                 const element = cardItems[i];
+                console.log("Tony, ", element.id)
                 await axios.delete('https://631ec1cc22cefb1edc39b06f.mockapi.io/cart' + element.id);
                 await delay(1000);
             }
@@ -89,9 +90,7 @@ function Drawer({ onClose, onRemove, items = [], opened }) {
                                     </li>
                                 </ul>
                                     <button disabled={isLoading} className="greenButton" onClick={onClickOrder}>
-                                        {/* <Link to='/'>Buy */}
-                                            Buy<img src="/img/arrow.svg" alt="Arrow" />
-                                        {/* </Link> */}
+                                        Buy<img src="/img/arrow.svg" alt="Arrow" />
                                     </button>
                             </div>
                         </>
