@@ -1,31 +1,53 @@
 import React from 'react'
 import { Link } from "react-router-dom";
-import Info from "./Info";
-import AppContext from '../context';
 
 import axios from 'axios';
 
-function Drawer({ onClose, onRemove, items = [] }) {
-    const { cardItems, setCardItems } = React.useContext(AppContext);
+import Info from "../Info";
+import AppContext from '../../context';
+
+import styles from './Drawer.module.scss'
+
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+function Drawer({ onClose, onRemove, items = [], opened }) {
+    const { cardItems, setCardItems, isLoading, setIsLoading } = React.useContext(AppContext);
     
     const [isOrderComplited, setOrderComplited] = React.useState(false);
+    const [orederId, setOrederId] = React.useState(null);
+    // const [isLoading, setIsLoading] = React.useState()
 
 
-    const getSumOfItems = () => items.length > 1 ? items.reduce((obj, acc) =>  obj.price + acc.price) : items[0].price;
+    const getSumOfItems = () => items.length > 1 ? items.reduce((obj, acc) =>  obj + acc.price, 0) : items[0].price;
 
     const taks = 5; 
-    const getTaks = () => getSumOfItems() / 100 * taks;
+    const getTaks = () => Math.floor(getSumOfItems() / 100 * taks);
 
-    const onClickOrder = () => {
-        axios.post('https://631ec1cc22cefb1edc39b06f.mockapi.io/orders', cardItems);
-        // setCardItems([ ...cardItems, data]);
-        setOrderComplited(true);
-        setCardItems([])
+    const onClickOrder = async () => {
+        try {
+            setIsLoading(true);
+            const { data } = await axios.post('https://631ec1cc22cefb1edc39b06f.mockapi.io/orders', {
+                items: cardItems,
+            });
+            setOrederId(data.id);
+            setOrderComplited(true);
+            setCardItems([]);
+            for (let i = 0; i < cardItems.length; i++) {
+                const element = cardItems[i];
+                await axios.delete('https://631ec1cc22cefb1edc39b06f.mockapi.io/cart' + element.id);
+                await delay(1000);
+            }
+        } catch (error) {
+            alert("Can't complite your order");
+            console.error(error)
+        }
+        setIsLoading(false);
     }
     return (
-        <div className="overlay">
+        <div className={`${styles.overlay} ${opened ? styles.overlayVisible : styles.overlay}`}>
             <div className="drawer d-flex flex-column">
-                <div className="header-cart-part d-flex justify-between">
+                <div className="headerCartPart d-flex justify-between">
                     <h2 className="mb-30">Shopping cart</h2>
                     <Link to='/'>
                         <div className="cu-p rmv-btn" onClick={onClose}>
@@ -39,7 +61,7 @@ function Drawer({ onClose, onRemove, items = [] }) {
                 {
                     items.length > 0 ? (
                         <>
-                            <div className="body-cart-part">
+                            <div className="bodyCartPart">
                                 {
                                     items.map((obj) =>
                                         <div key={obj.id} className="cartItem d-flex align-center mb-20">
@@ -53,7 +75,7 @@ function Drawer({ onClose, onRemove, items = [] }) {
                                     )
                                 }
                             </div>
-                            <div className="cartTotalBlock fotter-cart-part">
+                            <div className="cartTotalBlock">
                                 <ul>
                                     <li>
                                         <span>Total:</span>
@@ -61,12 +83,12 @@ function Drawer({ onClose, onRemove, items = [] }) {
                                         <b>{getSumOfItems()}$</b>
                                     </li>
                                     <li>
-                                        <span>Taks 5%</span>
+                                        <span>Taks {taks}%</span>
                                         <div></div>
                                         <b>{getTaks()}$</b>
                                     </li>
                                 </ul>
-                                    <button className="greenButton" onClick={onClickOrder}>
+                                    <button disabled={isLoading} className="greenButton" onClick={onClickOrder}>
                                         {/* <Link to='/'>Buy */}
                                             Buy<img src="/img/arrow.svg" alt="Arrow" />
                                         {/* </Link> */}
@@ -77,7 +99,7 @@ function Drawer({ onClose, onRemove, items = [] }) {
                             <Info 
                                 title={ isOrderComplited ? "Order is processed" : "Empty drawer"} 
                                 image={ isOrderComplited ? "/img/shopping-done.jpg" : "/img/EmptyDrawer.jpg"} 
-                                description={ isOrderComplited ? `Your order is ${23}, you'll receive it as soon as possible` : "Add at least one pair of sneakers to make order"}
+                                description={ isOrderComplited ? `Your order is ${orederId}, you'll receive it as soon as possible` : "Add at least one pair of sneakers to make order"}
                             />
                     )
                 }

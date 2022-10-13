@@ -23,28 +23,36 @@ function App() {
 
   useEffect(() => {
     (async function fetchData() {
-    const cartResponse = await axios.get('https://631ec1cc22cefb1edc39b06f.mockapi.io/cart');
-    const favResponse = await axios.get('https://631ec1cc22cefb1edc39b06f.mockapi.io/favorites');
-    const sneakersResponse = await axios.get('https://631ec1cc22cefb1edc39b06f.mockapi.io/sneakers');
+      try {
+        const [ cartResponse, favResponse, sneakersResponse] = await Promise.all([
+          axios.get('https://631ec1cc22cefb1edc39b06f.mockapi.io/cart'), 
+          axios.get('https://631ec1cc22cefb1edc39b06f.mockapi.io/favorites'), 
+          axios.get('https://631ec1cc22cefb1edc39b06f.mockapi.io/sneakers')
+        ]);
 
-    setIsLoading(false);
+        setIsLoading(false);
 
-    setCardItems(cartResponse.data);
-    setFavorites(favResponse.data);
-    setSneakers(sneakersResponse.data);
+        setCardItems(cartResponse.data);
+        setFavorites(favResponse.data);
+        setSneakers(sneakersResponse.data);
+      } catch (error) {
+        alert('Error in request')
+        console.log(error)
+      }
     }());
     
   }, []);
 
   const onAddToCard = async (obj) => {
-    console.log("resived obj", obj);
+    const findItem = cardItems.find(itemInFrawer => Number(itemInFrawer.parentId) === Number(obj.id));
     try {
-      if(cardItems.find(itemInFrawer => Number(itemInFrawer.id) === Number(obj.id))) {
-        axios.delete(`https://631ec1cc22cefb1edc39b06f.mockapi.io/cart/${String(obj.id)}`);
-        setCardItems((prev) => prev.filter(item => Number(item.id) !== Number(obj.id)));
+      if(findItem) {
+        axios.delete(`https://631ec1cc22cefb1edc39b06f.mockapi.io/cart/${String(findItem.id)}`);
+        setCardItems((prev) => prev.filter(item => Number(item.parentId) !== Number(obj.id)));
       } else {
+        setCardItems([ ...cardItems, obj]);
         const { data } = await axios.post('https://631ec1cc22cefb1edc39b06f.mockapi.io/cart', obj);
-        setCardItems([ ...cardItems, data]);
+        setCardItems((prev) => prev.map(item => item.parentId === data.parentId ? {...item, id: data.id} : item));
       }
     } catch(error) {
       console.log(error)
@@ -54,37 +62,41 @@ function App() {
   const onAddToFavorites = async (obj) => {
     try {
       if(favorites.find(favObj => Number(favObj.id) === Number(obj.id))) {
-        axios.delete(`https://631ec1cc22cefb1edc39b06f.mockapi.io/favorites/${obj.id}`);
         setFavorites((prev) => prev.filter(item => Number(item.id) !== Number(obj.id))); 
-        console.log("adding ", obj.id)
+        axios.delete(`https://631ec1cc22cefb1edc39b06f.mockapi.io/favorites/${obj.id}`);
       } else{
         const { data } = await axios.post('https://631ec1cc22cefb1edc39b06f.mockapi.io/favorites', obj);
         setFavorites((prev) => [ ...prev, data]);
-        console.log("adding ", obj.id)
       } 
     } catch(error) {
+      alert("Can't add to favorite ;(");
       console.log(error)
     }
   };
 
   const onRemoveFromDrawer = (obj) => {
-    console.log(obj)
-    // axios.delete(`https://631ec1cc22cefb1edc39b06f.mockapi.io/card/${id}`);
-    // setCardItems((prev) => prev.filter(item => item.id !== id));
-    axios.delete(`https://631ec1cc22cefb1edc39b06f.mockapi.io/cart/${String(obj.id)}`);
-    setCardItems((prev) => prev.filter(item => Number(item.id) !== Number(obj.id)));
+    try {
+      // axios.delete(`https://631ec1cc22cefb1edc39b06f.mockapi.io/card/${id}`);
+      // setCardItems((prev) => prev.filter(item => item.id !== id));
+      axios.delete(`https://631ec1cc22cefb1edc39b06f.mockapi.io/cart/${String(obj.id)}`);
+      setCardItems((prev) => prev.filter(item => Number(item.id) !== Number(obj.id)));
+    } catch (error) {
+      alert("Can't remove from drawer ;(")
+      console.log(error);
+    }
   };
 
   const onChangeSearchInput = (event) => {
     setSearchValue(event.target.value);
   };
 
-  const isSneakersInDrawer = ( id ) => cardItems.some((obj) => Number(obj.id) === Number(id));
+  const isSneakersInDrawer = ( id ) => cardItems.some((obj) => Number(obj.parentId) === Number(id));
   // const isSneakersInFavorites = ( id ) => favorites.some((obj) => Number(obj.id) === Number(id));
   return (
-    <AppContext.Provider value={{ sneakers, cardItems, favorites, isSneakersInDrawer, onAddToFavorites, setCardOpened, setCardItems }}>
+    <AppContext.Provider value={{ sneakers, cardItems, favorites, isSneakersInDrawer, onAddToFavorites, onAddToCard, setCardOpened, setCardItems, isLoading, setIsLoading }}>
       <div className="wrapper clear">
-        { cardOpened && <Drawer items={cardItems} onClose={() => setCardOpened(false)} onRemove={onRemoveFromDrawer} /> }
+        {/* { cardOpened && <Drawer items={cardItems} onClose={() => setCardOpened(false)} onRemove={onRemoveFromDrawer} /> } */}
+        <Drawer items={cardItems} onClose={() => setCardOpened(false)} onRemove={onRemoveFromDrawer} opened={cardOpened} />
         <Header onClickCard= {() => setCardOpened(true)} />
         <Routes>
           <Route path='/' exact element= {
@@ -103,10 +115,7 @@ function App() {
               <Favorites />
           } />
           <Route index path='orders' element = {
-              <Orders
-                favorites={favorites}
-                onAddToFavorites={onAddToFavorites}
-              />
+              <Orders />
           } />
         </Routes>
       </div>

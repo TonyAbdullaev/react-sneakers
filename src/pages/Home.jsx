@@ -16,14 +16,9 @@ function Home(
             return ( isLoading ? [...Array(12)] : filteredSneakers).map((CardProps, index) => (
                 // return filteredSneakers.map((CardProps, index) => (
                     <Card 
-                        key={index} 
-                        // id={CardProps.id} // undefined
-                        // title={CardProps.title}
-                        // price={CardProps.price}
-                        // imgUrl={CardProps.imgUrl}
+                        key={index}
                         onFavorite={(product) => onAddToFavorites(product)}
                         onPlus={(product) => onAddToCard(product)}
-                        // addedToDrawer={isSneakersInDrawer(CardProps && CardProps.id)}
                         loading={isLoading}
                         { ...CardProps }
                     />
